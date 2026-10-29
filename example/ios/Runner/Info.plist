@@ -14,8 +14,6 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Needed to connect to the Zebra printer over Bluetooth.</string>
 	<key>CFBundleName</key>
 	<string>zebra_ble_printer_example</string>
 	<key>CFBundlePackageType</key>
@@ -28,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Needed to connect to the Zebra printer over Bluetooth.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

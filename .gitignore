@@ -7,3 +7,37 @@ pubspec.lock
 *.iml
 example/android/local.properties
 example/android/.gradle/
+
+# macOS
+.DS_Store
+
+# iOS / Xcode
+**/ios/**/Pods/
+**/ios/**/xcuserdata/
+**/ios/**/DerivedData/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Android
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+*.jks
+*.keystore
+
+# Signing and secrets
+*.p12
+*.mobileprovision
+*.cer
+.env
+.env.*
+
+# Misc
+*.log
+.pub-cache/
+.pub/
+coverage/
