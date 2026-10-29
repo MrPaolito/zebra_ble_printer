@@ -6,6 +6,10 @@ Print ZPL over Bluetooth LE on Zebra printers from Flutter (Android and iOS),
 > Unofficial. Not affiliated with, endorsed by or supported by Zebra
 > Technologies. "Zebra" and "ZD410" are trademarks of their owners.
 
+<p align="center">
+  <img src="doc/demo.gif" width="260" alt="The example app connecting to a Zebra ZD410 over BLE and printing a HELLO ZEBRA label">
+</p>
+
 ## How it works
 
 Zebra's application note
@@ -19,11 +23,14 @@ works like a serial port towards the printer's parser:
 | `38eb4a82-c570-11e3-9507-0002a5d5c51b` | "To Printer Data": write ZPL/SGD here |
 | `38eb4a81-c570-11e3-9507-0002a5d5c51b` | "From Printer Data": replies via indications |
 
-Zebra has no SDK for BLE on iOS and points to a CoreBluetooth sample instead,
-so a plain BLE library is the way to go. This package does that in a few
-hundred lines on top of [`universal_ble`](https://pub.dev/packages/universal_ble):
-scan, connect, negotiate the MTU, find `38eb4a82` and write to it in chunks
-that fit the MTU, always with response.
+Zebra staff have said in a
+[developer forum thread](https://developer.zebra.com/content/sdk-support-btle-printers-zd620)
+that their SDK doesn't support Bluetooth LE on iOS, and point to a sample that
+uses CoreBluetooth directly. So a plain BLE library is enough. This package
+does that in a few hundred lines on top of
+[`universal_ble`](https://pub.dev/packages/universal_ble): scan, connect,
+negotiate the MTU, find `38eb4a82` and write to it in chunks that fit the MTU,
+always with response.
 
 On the author's ZD410 the writable characteristic that prints is exactly
 `38eb4a82-c570-11e3-9507-0002a5d5c51b`. The application note was written for
@@ -38,10 +45,29 @@ a user-confirmed test print on each writable vendor characteristic (see
 | Printer | Platform | Status |
 |---|---|---|
 | ZD410 | Android | Printing works (author's test) |
-| ZD410 | iOS | Not tested with this package yet |
+| ZD410 | iOS (iPhone 16e, iOS 26.0.1) | Printing works (author's test) |
 | Other models | any | Unknown. Reports welcome |
 
+Printer used for the tests: ZD410-203dpi ZPL, Link-OS 5, firmware V84.20.10Z.
+
 Tried it on your printer? Please open a *Printer compatibility report* issue.
+
+## Installation
+
+Requires Flutter 3.44 or later.
+
+```yaml
+dependencies:
+  zebra_ble_printer: ^0.1.0
+```
+
+To use the latest code from GitHub instead:
+
+```yaml
+dependencies:
+  zebra_ble_printer:
+    git: https://github.com/MrPaolito/zebra_ble_printer
+```
 
 ## Usage
 
@@ -118,8 +144,6 @@ The app handles permissions and turning the Bluetooth adapter on.
   implemented yet.
 - **No automatic reconnection.** If the printer switches off, `isReady`
   becomes false and `onDisconnected` emits; call `reconnect()` to get back.
-  Zebra also reports some newer iOS devices disconnecting from newer printers
-  after about 60 seconds.
 - **Slow.** BLE is slow; Zebra's note benchmarks about 80 bytes per second
   (2014 figure). Avoid big graphics.
 - **ZPL text only**, Android and iOS only.

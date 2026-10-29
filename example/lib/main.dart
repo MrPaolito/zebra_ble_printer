@@ -14,10 +14,10 @@ class ExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Zebra BLE Printer',
-        theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-        home: const SetupWizard(),
-      );
+    title: 'Zebra BLE Printer',
+    theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+    home: const SetupWizard(),
+  );
 }
 
 /// Wizard steps: permissions, scan, connect (+ fallback test), print.
@@ -102,27 +102,28 @@ class _SetupWizardState extends State<SetupWizard> {
   void _goTo(_Step step) => setState(() => _step = step);
 
   Future<void> _requestPermissions() => _run(() async {
-        // iOS doesn't need permission_handler: the system asks for the
-        // Bluetooth permission at the first scan.
-        if (Platform.isAndroid) {
-          final statuses = await [
-            Permission.bluetoothScan,
-            Permission.bluetoothConnect,
-            Permission.locationWhenInUse,
-          ].request();
-          // On Android < 12 bluetoothScan/Connect come back denied but aren't
-          // needed: only location and the adapter being on matter.
-          final ok = statuses[Permission.bluetoothScan]!.isGranted ||
-              statuses[Permission.locationWhenInUse]!.isGranted;
-          if (!ok) throw 'Bluetooth permissions denied';
-        }
-        if (await _tryReconnect()) {
-          _goTo(_Step.print);
-          return;
-        }
-        _goTo(_Step.scan);
-        await _scan();
-      });
+    // iOS doesn't need permission_handler: the system asks for the
+    // Bluetooth permission at the first scan.
+    if (Platform.isAndroid) {
+      final statuses = await [
+        Permission.bluetoothScan,
+        Permission.bluetoothConnect,
+        Permission.locationWhenInUse,
+      ].request();
+      // On Android < 12 bluetoothScan/Connect come back denied but aren't
+      // needed: only location and the adapter being on matter.
+      final ok =
+          statuses[Permission.bluetoothScan]!.isGranted ||
+          statuses[Permission.locationWhenInUse]!.isGranted;
+      if (!ok) throw 'Bluetooth permissions denied';
+    }
+    if (await _tryReconnect()) {
+      _goTo(_Step.print);
+      return;
+    }
+    _goTo(_Step.scan);
+    await _scan();
+  });
 
   /// Reconnects the saved printer, if there is one and it is nearby.
   Future<bool> _tryReconnect() async {
@@ -135,14 +136,14 @@ class _SetupWizardState extends State<SetupWizard> {
   }
 
   Future<void> _scan() => _run(() async {
-        final found = await _printer.scan();
-        found.sort((a, b) => (b.rssi ?? -127).compareTo(a.rssi ?? -127));
-        setState(() => _devices = found);
-        if (found.isEmpty) {
-          throw 'No devices found. Check that Bluetooth is on and that the app '
-              'has the permission (Settings).';
-        }
-      });
+    final found = await _printer.scan();
+    found.sort((a, b) => (b.rssi ?? -127).compareTo(a.rssi ?? -127));
+    setState(() => _devices = found);
+    if (found.isEmpty) {
+      throw 'No devices found. Check that Bluetooth is on and that the app '
+          'has the permission (Settings).';
+    }
+  });
 
   Future<void> _connect(BleDevice device) {
     _selected = device;
@@ -193,20 +194,20 @@ class _SetupWizardState extends State<SetupWizard> {
   }
 
   Future<void> _print() => _run(() async {
-        try {
-          await _printer.printZpl(_zpl.text);
-          _snack('Sent to the printer');
-        } catch (_) {
-          if (!_printer.isReady) _goTo(_Step.scan);
-          rethrow;
-        }
-      });
+    try {
+      await _printer.printZpl(_zpl.text);
+      _snack('Sent to the printer');
+    } catch (_) {
+      if (!_printer.isReady) _goTo(_Step.scan);
+      rethrow;
+    }
+  });
 
   Future<void> _restart() => _run(() async {
-        await _printer.disconnect();
-        setState(() => _selected = null);
-        _goTo(_Step.scan);
-      });
+    await _printer.disconnect();
+    setState(() => _selected = null);
+    _goTo(_Step.scan);
+  });
 
   void _snack(String text) {
     if (!mounted) return;
@@ -219,8 +220,8 @@ class _SetupWizardState extends State<SetupWizard> {
   StepState _state(_Step s) => s.index < _step.index
       ? StepState.complete
       : s == _step
-          ? StepState.indexed
-          : StepState.disabled;
+      ? StepState.indexed
+      : StepState.disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -271,22 +272,27 @@ class _SetupWizardState extends State<SetupWizard> {
       ? const SizedBox.shrink()
       : Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Text(_error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          child: Text(
+            _error!,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
         );
 
   Widget _permissionsStep() => _stepBody([
-        const Text('Bluetooth permissions (and location on Android) are '
-            'needed to find the printer.'),
-        FilledButton(
-          onPressed: _busy ? null : _requestPermissions,
-          child: const Text('Grant permissions'),
-        ),
-      ]);
+    const Text(
+      'Bluetooth permissions (and location on Android) are '
+      'needed to find the printer.',
+    ),
+    FilledButton(
+      onPressed: _busy ? null : _requestPermissions,
+      child: const Text('Grant permissions'),
+    ),
+  ]);
 
   Widget _scanStep() {
-    final shown =
-        _advanced ? _devices : _devices.where(ZebraBle.looksLikeZebra).toList();
+    final shown = _advanced
+        ? _devices
+        : _devices.where(ZebraBle.looksLikeZebra).toList();
     final hidden = _devices.length - shown.length;
     return _stepBody([
       const Text('Switch the printer on and pick it from the list.'),
@@ -311,17 +317,21 @@ class _SetupWizardState extends State<SetupWizard> {
           style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
       if (shown.isEmpty && _devices.isNotEmpty)
-        const Text('No Zebra printer found. '
-            'Turn on "Advanced" to see all devices.'),
+        const Text(
+          'No Zebra printer found. '
+          'Turn on "Advanced" to see all devices.',
+        ),
       for (final d in shown)
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.bluetooth),
           title: Text(_name(d)),
-          subtitle: Text(_advanced
-              ? 'RSSI ${d.rssi ?? '-'} · ${d.deviceId}'
-                  '${d.services.isEmpty ? '' : '\nServices: ${d.services.join(', ')}'}'
-              : 'RSSI ${d.rssi ?? '-'}'),
+          subtitle: Text(
+            _advanced
+                ? 'RSSI ${d.rssi ?? '-'} · ${d.deviceId}'
+                      '${d.services.isEmpty ? '' : '\nServices: ${d.services.join(', ')}'}'
+                : 'RSSI ${d.rssi ?? '-'}',
+          ),
           isThreeLine: _advanced && d.services.isNotEmpty,
           onTap: _busy ? null : () => _connect(d),
         ),
@@ -332,86 +342,105 @@ class _SetupWizardState extends State<SetupWizard> {
     final uuid = _testUuid;
     final consent = _probeConsent;
     return _stepBody([
-      Text(_selected == null
-          ? 'Waiting...'
-          : 'Connecting to ${_name(_selected!)}...'),
+      Text(
+        _selected == null
+            ? 'Waiting...'
+            : 'Connecting to ${_name(_selected!)}...',
+      ),
       if (consent != null) ...[
-        Text('I am about to send a test label to '
-            '${_selected == null ? 'this device' : _name(_selected!)}. '
-            'Continue?'),
-        Row(children: [
-          FilledButton(
-            onPressed: () => consent.complete(true),
-            child: const Text('Continue'),
-          ),
-          const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: () => consent.complete(false),
-            child: const Text('Cancel'),
-          ),
-        ]),
+        Text(
+          'I am about to send a test label to '
+          '${_selected == null ? 'this device' : _name(_selected!)}. '
+          'Continue?',
+        ),
+        Row(
+          children: [
+            FilledButton(
+              onPressed: () => consent.complete(true),
+              child: const Text('Continue'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: () => consent.complete(false),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
       ],
       if (uuid != null) ...[
-        Text('I sent a test label on the channel:\n$uuid',
-            style: Theme.of(context).textTheme.bodySmall),
-        const Text('Did it print?',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        Row(children: [
-          FilledButton(
-            onPressed: () => _confirmation?.complete(true),
-            child: const Text('Yes'),
-          ),
-          const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: () => _confirmation?.complete(false),
-            child: const Text('No, try the next one'),
-          ),
-        ]),
+        Text(
+          'I sent a test label on the channel:\n$uuid',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const Text(
+          'Did it print?',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Row(
+          children: [
+            FilledButton(
+              onPressed: () => _confirmation?.complete(true),
+              child: const Text('Yes'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: () => _confirmation?.complete(false),
+              child: const Text('No, try the next one'),
+            ),
+          ],
+        ),
       ],
     ]);
   }
 
   Widget _printStep() => _stepBody([
-        Text('Connected to ${_printer.device == null ? '' : _name(_printer.device!)}',
-            style: Theme.of(context).textTheme.titleMedium),
-        Wrap(spacing: 8, children: [
-          for (final t in _testLabels.entries)
-            ActionChip(
-              label: Text(t.key),
-              onPressed: () => setState(() => _zpl.text = t.value),
-            ),
-        ]),
-        TextField(
-          controller: _zpl,
-          maxLines: 4,
-          decoration: const InputDecoration(
-            labelText: 'ZPL',
-            border: OutlineInputBorder(),
+    Text(
+      'Connected to ${_printer.device == null ? '' : _name(_printer.device!)}',
+      style: Theme.of(context).textTheme.titleMedium,
+    ),
+    Wrap(
+      spacing: 8,
+      children: [
+        for (final t in _testLabels.entries)
+          ActionChip(
+            label: Text(t.key),
+            onPressed: () => setState(() => _zpl.text = t.value),
           ),
+      ],
+    ),
+    TextField(
+      controller: _zpl,
+      maxLines: 4,
+      decoration: const InputDecoration(
+        labelText: 'ZPL',
+        border: OutlineInputBorder(),
+      ),
+    ),
+    Row(
+      children: [
+        FilledButton.icon(
+          onPressed: _busy ? null : _print,
+          icon: const Icon(Icons.print),
+          label: const Text('Print'),
         ),
-        Row(children: [
-          FilledButton.icon(
-            onPressed: _busy ? null : _print,
-            icon: const Icon(Icons.print),
-            label: const Text('Print'),
-          ),
-          const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: _busy ? null : _restart,
-            child: const Text('Change printer'),
-          ),
-        ]),
-      ]);
+        const SizedBox(width: 8),
+        OutlinedButton(
+          onPressed: _busy ? null : _restart,
+          child: const Text('Change printer'),
+        ),
+      ],
+    ),
+  ]);
 
   Widget _stepBody(List<Widget> children) => Align(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _errorText(),
-            for (final c in children)
-              Padding(padding: const EdgeInsets.only(bottom: 8), child: c),
-          ],
-        ),
-      );
+    alignment: Alignment.centerLeft,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _errorText(),
+        for (final c in children)
+          Padding(padding: const EdgeInsets.only(bottom: 8), child: c),
+      ],
+    ),
+  );
 }

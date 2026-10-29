@@ -118,9 +118,8 @@ class ZebraBlePrinter {
     try {
       final mtu = await _negotiateMtu(id);
       final services = await UniversalBle.discoverServices(id);
-      final saved = (await store.getAll())
-          .where((p) => p.remoteId == id)
-          .firstOrNull;
+      final saved =
+          (await store.getAll()).where((p) => p.remoteId == id).firstOrNull;
 
       var target = saved == null
           ? null
@@ -170,8 +169,9 @@ class ZebraBlePrinter {
   /// Reconnects to a printer already known to the [store], without asking the
   /// user anything: scans until it shows up (up to [scanTimeout]) and connects.
   ///
-  /// Uses the printer with [remoteId], or the first saved one. Returns false
-  /// if none is saved or it wasn't found nearby (off, out of range).
+  /// Uses the printer with [remoteId], or the first saved one. Returns true
+  /// right away if it is already connected, and false if none is saved or it
+  /// wasn't found nearby (off, out of range).
   /// Throws [NoPrintCharacteristicException] if the saved characteristic no
   /// longer exists on the printer: run the setup with [connect] again.
   Future<bool> reconnect({
@@ -179,6 +179,11 @@ class ZebraBlePrinter {
     Duration scanTimeout = const Duration(seconds: 8),
     Duration connectTimeout = const Duration(seconds: 10),
   }) async {
+    // a connected printer stops advertising, so a scan wouldn't find it
+    if (isReady && (remoteId == null || _device?.deviceId == remoteId)) {
+      return true;
+    }
+
     final saved = (await store.getAll())
         .where((p) => remoteId == null || p.remoteId == remoteId)
         .firstOrNull;

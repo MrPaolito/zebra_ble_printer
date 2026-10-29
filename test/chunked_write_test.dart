@@ -50,7 +50,9 @@ void main() {
 
     test('findPrintTarget finds the writable To Printer Data', () {
       final target = ZebraBle.findPrintTarget([
-        svc('1800', {'2a00': [CharacteristicProperty.read]}),
+        svc('1800', {
+          '2a00': [CharacteristicProperty.read]
+        }),
         svc(ZebraBle.parserService, {
           ZebraBle.fromPrinterData: [CharacteristicProperty.indicate],
           ZebraBle.toPrinterData: [CharacteristicProperty.write],
@@ -63,8 +65,9 @@ void main() {
     test('findPrintTarget ignores it when it is not writable or absent', () {
       expect(
           ZebraBle.findPrintTarget([
-            svc(ZebraBle.parserService,
-                {ZebraBle.toPrinterData: [CharacteristicProperty.read]}),
+            svc(ZebraBle.parserService, {
+              ZebraBle.toPrinterData: [CharacteristicProperty.read]
+            }),
           ]),
           isNull);
       expect(ZebraBle.findPrintTarget([]), isNull);
@@ -78,8 +81,7 @@ void main() {
       expect(
           ZebraBle.looksLikeZebra(BleDevice(deviceId: 'a', name: 'ZD410-203')),
           isTrue);
-      expect(
-          ZebraBle.looksLikeZebra(BleDevice(deviceId: 'a', name: 'Lamp')),
+      expect(ZebraBle.looksLikeZebra(BleDevice(deviceId: 'a', name: 'Lamp')),
           isFalse);
     });
   });
