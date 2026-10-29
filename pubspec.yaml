@@ -1,0 +1,29 @@
+name: zebra_ble_printer
+description: "Print ZPL over Bluetooth LE on Zebra printers from Flutter on Android and iOS, using Zebra's BLE parser service. No Zebra SDK."
+version: 0.1.0
+repository: https://github.com/MrPaolito/zebra_ble_printer
+issue_tracker: https://github.com/MrPaolito/zebra_ble_printer/issues
+topics:
+  - bluetooth
+  - ble
+  - zebra
+  - zpl
+  - printer
+
+environment:
+  sdk: ^3.5.4
+  flutter: '>=3.44.0'
+
+platforms:
+  android:
+  ios:
+
+dependencies:
+  flutter:
+    sdk: flutter
+  universal_ble: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

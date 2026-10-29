@@ -1,0 +1,35 @@
+name: Printer compatibility report
+description: Tell us whether it works on your printer and phone
+title: "[Report] <printer model> on <Android/iOS>"
+labels: [compatibility]
+body:
+  - type: input
+    id: printer
+    attributes:
+      label: Printer model and firmware
+      placeholder: ZD410, firmware V84.20.18Z
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: Phone and OS version
+      placeholder: iPhone 13, iOS 18.2 / Pixel 7, Android 15
+    validations:
+      required: true
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked
+      options:
+        - label: The printer shows up in the scan
+        - label: Connect finds the print characteristic by itself (no test print asked)
+        - label: Printing works
+        - label: Reconnect works after closing the app
+        - label: Accents print correctly (Accents test label)
+        - label: Switching the printer off is detected
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Advertised name and services (Advanced switch in the example), errors, anything odd.
